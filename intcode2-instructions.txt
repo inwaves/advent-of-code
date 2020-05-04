@@ -1,0 +1,24 @@
+operation codes:
+1: add first two parameters, store them at 3rd
+2: multiply the first two parameters, store them at 3rd
+3: one input, one parameter - store the input at the address of the parameter
+4: one parameter - output the value found at address of the parameter
+99: halt
+
+parameter modes:
+0: parameters are addresses (destination parameters are always addresses)
+1: parameters are values
+
+pmode + opcode encoded in the first instruction as:
+ABCDE
+ 1002
+
+DE  - two-digit opcode
+C   - mode of 1st parameter
+B   - mode of 2nd parameter
+A   - mode of 3rd parameter
+
+ABCD could all be missing, in which case they are defaulted as 0s.
+
+So:
+1002 means multiply the first (address) and second parameter (value), store in 3rd (always address and since 0 it's omitted)
