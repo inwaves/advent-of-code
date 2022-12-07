@@ -3,7 +3,7 @@ from typing import Tuple, List
 
 def sort_crates() -> None:
     filepath = "./input.txt"
-    stack_data = []     # Stacks as list of lists.
+    stack_data = []  # Stacks as list of lists.
 
     with open(filepath, "r") as f:
         # Start by parsing the stack data.
@@ -17,8 +17,8 @@ def sort_crates() -> None:
         # Then, read each move and apply it to the stacks.
         for line in f:
             crates_moved, src_stack, dest_stack = parse_move(line)
-            stacks[dest_stack-1] += stacks[src_stack-1][-crates_moved:]
-            stacks[src_stack-1] = stacks[src_stack-1][:-crates_moved]
+            stacks[dest_stack - 1] += stacks[src_stack - 1][-crates_moved:]
+            stacks[src_stack - 1] = stacks[src_stack - 1][:-crates_moved]
     readout = "".join([stack.pop() for stack in stacks])
     print(readout)
 
@@ -27,7 +27,7 @@ def parse_stacks(stack_data: List[str], num_stacks: int) -> List[List[str]]:
     """Take in the lines that specify the initial state of the stacks.
     Return the stacks parsed as lists containing strings (crate names)."""
     ns = int(num_stacks)
-    stack_data = [s.strip("\n").ljust(ns*4-1) for s in stack_data]
+    stack_data = [s.strip("\n").ljust(ns * 4 - 1) for s in stack_data]
     split_lines = [s[1::4] for s in stack_data]
     print(split_lines)
     stacks = [[] for _ in range(ns)]
