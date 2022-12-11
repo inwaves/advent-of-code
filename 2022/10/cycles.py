@@ -4,7 +4,15 @@ from enum import IntEnum
 
 CYCLE_INDICES = [20, 60, 100, 140, 180, 220]
 SPRITE_WIDTH = 3
-CRT_HEIGHT, CRT_WIDTH = 40, 6
+CRT_WIDTH, CRT_HEIGHT = 40, 6
+
+expected_screen = """##..##..##..##..##..##..##..##..##..##..
+###...###...###...###...###...###...###.
+####....####....####....####....####....
+#####.....#####.....#####.....#####.....
+######......######......######......####
+#######.......#######.......#######.....
+"""
 
 class CycleCosts(IntEnum):
     NOOP = 1
@@ -18,49 +26,42 @@ def read_input(filepath: str) -> List[str]:
 
     return lines
 
-def find_signal_strengths(instructions: List[str], at_indices: List[int]) -> List[int]:
+def run_test_case() -> None:
+    lines = read_input("./example.txt")
+    output = draw_crt(lines)
+    assert output == expected_screen
+
+def draw_pixel(cycle: int, register: int, line: str, crt_lines: List[str]) -> str:
+    new_char ="#" if abs(((cycle-1) % CRT_WIDTH)-register) <= 1 else "."
+    line += new_char
+    if not cycle % CRT_WIDTH:
+        crt_lines += [line]
+        line = ""
+    return line, crt_lines
+
+
+def draw_crt(instructions: List[str]) -> str:
     cycle = 1
     register = 1
-    registers_of_interest: List[int] = []
+    crt_lines: List[str] = []
+    line = ""
     for instr in instructions:
         instr = instr.split(" ")
         if len(instr) == 1:
-            if cycle in at_indices:
-                registers_of_interest += [register]
+            line, crt_lines = draw_pixel(cycle, register, line, crt_lines)
             cycle += CycleCosts.NOOP
-            continue
         else:
             for _ in range(CycleCosts.ADDX):
-                if cycle in at_indices:
-                    registers_of_interest += [register]
+                line, crt_lines = draw_pixel(cycle, register, line, crt_lines)
                 cycle += 1
 
             # Adding op finished, write to register.
             register += int(instr[1])
 
-    if cycle in at_indices:
-        registers_of_interest += [register]
-
-    return registers_of_interest
-
-def test_cycle_maths(instructions: List[str]) -> None:
-    registers = find_signal_strengths(instructions, list(range(1, 7)))
-    assert registers == [1, 1, 1, 4, 4, -1]
-
-def run_test_case() -> None:
-    lines = read_input("./small_example.txt")
-    test_cycle_maths(lines)
-
-    lines = read_input("./example.txt")
-    expected = 13140
-    signals = find_signal_strengths(lines, CYCLE_INDICES)
-    signal_strengths = [sig * cycle for sig, cycle in zip(signals, CYCLE_INDICES)]
-    assert sum(signal_strengths) == expected
-
+    return "\n".join(crt_lines)
 
 if __name__ == "__main__":
-    run_test_case()
+    #run_test_case()
     lines = read_input("./input.txt")
-    signals = find_signal_strengths(lines, CYCLE_INDICES)
-    signal_strengths = [sig * cycle for sig, cycle in zip(signals, CYCLE_INDICES)]
-    print(sum(signal_strengths))
+    output = draw_crt(lines)
+    print(output)
