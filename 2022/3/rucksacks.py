@@ -13,12 +13,12 @@ with open(input_filepath, "r") as f:
         else:
             print(f"{buf=}")
             sets = [set(line) for line in buf]
-            badge = sets[0].intersection(sets[1]).intersection(sets[2])
+            badge = sets[0] & sets[1] & sets[2]
             print(f"{badge=}")
             total += values[badge.pop()]
             buf = [line]
     sets = [set(line) for line in buf]
-    badge = sets[0].intersection(sets[1]).intersection(sets[2])
+    badge = sets[0] & sets[1] & sets[2]
     print(f"{badge=}")
     total += values[badge.pop()]
 print(total)
