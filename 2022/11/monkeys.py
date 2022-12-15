@@ -1,5 +1,6 @@
 from typing import List, Callable, Tuple
 from functools import total_ordering
+import math
 import sys
 
 def read_input(filepath: str) -> List[str]:
@@ -40,9 +41,9 @@ class Monkey:
         self.predicate = lambda x : (x % divisible_by) == 0
 
     def inspect(self) -> None:
-        it = self.inventory[0]
-        self.inventory[0] = sys.maxsize - self.inspection(self.inventory[0])
         self.inspections_made += 1
+        it = self.inventory[0]
+        self.inventory[0] = self.inspection(self.inventory[0]) % self.divider
         print(f"Inspection from Monkey {self.order} on item {it} turns it to {self.inventory[0]}")
 
     def eval_and_throw_item(self) -> Tuple[int, int]:
@@ -88,6 +89,10 @@ def parse_monkeys(lines: List[str]) -> List[Monkey]:
                 monkey.destinations = (0, int_of_interest)
             elif "If false: " in line:
                 monkey.destinations = (int_of_interest, monkey.destinations[1])
+
+    divider = math.prod(monkey.div_by for monkey in monkeys)
+    for monkey in monkeys:
+        monkey.divider = divider
     return monkeys
 
 def play_round(monkeys: List[Monkey]) -> None:
@@ -107,11 +112,11 @@ def test_monkeys(monkeys: List[Monkey]) -> None:
     print(monkeys[1])
 
 if __name__ == "__main__":
-    run_test_case()
+    #run_test_case()
     lines = read_input("./input.txt")
     monkeys = parse_monkeys(lines)
     print(monkeys)
     #test_monkeys(monkeys)
-    for _ in range(20):
+    for _ in range(10000):
         play_round(monkeys)
     print([monkey.inspections_made for monkey in sorted(monkeys)])
